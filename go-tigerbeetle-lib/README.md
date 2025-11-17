@@ -207,7 +207,9 @@ transfers, err := queryHelper.TransfersByCode(10, 50)
 - **pkg/transaction**: High-level transaction patterns (escrow, refund, etc.)
 - **pkg/query**: Query helpers for accounts and transfers
 - **pkg/batch**: Batch processing utilities
+- **pkg/insurance**: Insurance-specific operations and domain models
 - **examples**: Comprehensive examples for all features
+- **examples/insurance**: Complete insurance management examples
 
 ## Transaction Patterns
 
@@ -278,11 +280,21 @@ for _, result := range results {
 
 See the [examples](./examples) directory for complete, runnable examples:
 
+### General Examples
 - **basic_transfer.go**: Basic account creation and transfers
 - **escrow.go**: Escrow pattern with release/cancel
 - **multi_party.go**: Split payments to multiple recipients
 - **batch_operations.go**: Efficient batch processing
 - **query_operations.go**: Querying accounts and transfers
+
+### Insurance Examples
+Complete insurance management system examples in [examples/insurance](./examples/insurance):
+- **premium_collection.go**: Premium collection through cash, payment gateway, bank transfer, auto-debit, cheque
+- **policy_revival.go**: Revival of lapsed policies with outstanding premiums, penalties, and interest
+- **claim_processing.go**: Death claims, maturity claims, partial withdrawals, and surrender values
+- **complete_insurance_workflow.go**: End-to-end insurance operations
+
+See the [Insurance README](./examples/insurance/README.md) for detailed documentation.
 
 ## Testing
 
