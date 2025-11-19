@@ -29,27 +29,31 @@ func main() {
 
 	fmt.Println("=== Insurance Policy Revival Demo ===\n")
 
+	// Generate unique IDs based on timestamp to avoid conflicts with previous runs
+	baseID := uint64(time.Now().UnixNano())
+	fmt.Printf("Using base ID: %d (timestamp-based for uniqueness)\n\n", baseID)
+
 	// Setup: Create necessary accounts
 	fmt.Println("Setting up accounts...")
 	accountMgr := account.NewManager(c)
 
 	systemAccounts := []types.Account{
 		// Payment method accounts
-		account.New(types.ToUint128(uint64(insurance.AccountCodePaymentGateway))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodePaymentGateway))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodePaymentGateway).
 			Build(),
-		account.New(types.ToUint128(uint64(insurance.AccountCodeCashCollection))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodeCashCollection))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodeCashCollection).
 			Build(),
 
 		// Company revenue accounts
-		account.New(types.ToUint128(uint64(insurance.AccountCodeRevivalIncome))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodeRevivalIncome))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodeRevivalIncome).
 			Build(),
-		account.New(types.ToUint128(uint64(insurance.AccountCodePenaltyIncome))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodePenaltyIncome))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodePenaltyIncome).
 			Build(),
@@ -64,7 +68,7 @@ func main() {
 	fmt.Println("Scenario 1: Policy with 1 missed premium")
 	fmt.Println("=========================================")
 
-	policy1ID := types.ToUint128(100001)
+	policy1ID := types.ToUint128(baseID + 100001)
 	policy1 := account.New(policy1ID).
 		Ledger(insurance.LedgerINR).
 		Code(insurance.AccountCodePolicyLapsed).
@@ -103,7 +107,7 @@ func main() {
 
 	// Process revival
 	if err := insuranceOps.RevivePolicy(insurance.RevivalParams{
-		BaseTransferID:     1000,
+		BaseTransferID:     baseID + 1000,
 		PolicyAccountID:    policy1ID,
 		OutstandingPremium: types.ToUint128(outstandingPremium),
 		PenaltyAmount:      types.ToUint128(penalty),
@@ -127,7 +131,7 @@ func main() {
 	fmt.Println("Scenario 2: Policy with 3 missed premiums")
 	fmt.Println("==========================================")
 
-	policy2ID := types.ToUint128(100002)
+	policy2ID := types.ToUint128(baseID + 100002)
 	policy2 := account.New(policy2ID).
 		Ledger(insurance.LedgerINR).
 		Code(insurance.AccountCodePolicyLapsed).
@@ -162,7 +166,7 @@ func main() {
 
 	// Process revival via cash payment
 	if err := insuranceOps.RevivePolicy(insurance.RevivalParams{
-		BaseTransferID:     2000,
+		BaseTransferID:     baseID + 2000,
 		PolicyAccountID:    policy2ID,
 		OutstandingPremium: types.ToUint128(outstandingPremium2),
 		PenaltyAmount:      types.ToUint128(penalty2),
@@ -186,7 +190,7 @@ func main() {
 	fmt.Println("Scenario 3: Revival with waived penalty (Special concession)")
 	fmt.Println("============================================================")
 
-	policy3ID := types.ToUint128(100003)
+	policy3ID := types.ToUint128(baseID + 100003)
 	policy3 := account.New(policy3ID).
 		Ledger(insurance.LedgerINR).
 		Code(insurance.AccountCodePolicyLapsed).
@@ -219,7 +223,7 @@ func main() {
 
 	// Process revival with zero penalty
 	if err := insuranceOps.RevivePolicy(insurance.RevivalParams{
-		BaseTransferID:     3000,
+		BaseTransferID:     baseID + 3000,
 		PolicyAccountID:    policy3ID,
 		OutstandingPremium: types.ToUint128(outstandingPremium3),
 		PenaltyAmount:      types.ToUint128(0), // No penalty

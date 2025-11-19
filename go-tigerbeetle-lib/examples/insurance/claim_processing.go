@@ -30,37 +30,41 @@ func main() {
 
 	fmt.Println("=== Insurance Claim Processing Demo ===\n")
 
+	// Generate unique IDs based on timestamp to avoid conflicts with previous runs
+	baseID := uint64(time.Now().UnixNano())
+	fmt.Printf("Using base ID: %d (timestamp-based for uniqueness)\n\n", baseID)
+
 	// Setup: Create necessary accounts
 	fmt.Println("Setting up accounts...")
 	accountMgr := account.NewManager(c)
 
 	systemAccounts := []types.Account{
 		// Payment method accounts
-		account.New(types.ToUint128(uint64(insurance.AccountCodeBankTransfer))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodeBankTransfer))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodeBankTransfer).
 			Build(),
-		account.New(types.ToUint128(uint64(insurance.AccountCodePaymentGateway))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodePaymentGateway))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodePaymentGateway).
 			Build(),
-		account.New(types.ToUint128(uint64(insurance.AccountCodeCheque))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodeCheque))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodeCheque).
 			Build(),
 
 		// Premium income (to fund policies)
-		account.New(types.ToUint128(uint64(insurance.AccountCodePremiumIncome))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodePremiumIncome))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodePremiumIncome).
 			Build(),
 
 		// Claims accounts
-		account.New(types.ToUint128(uint64(insurance.AccountCodeClaimsReserve))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodeClaimsReserve))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodeClaimsReserve).
 			Build(),
-		account.New(types.ToUint128(uint64(insurance.AccountCodeClaimsPayable))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodeClaimsPayable))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodeClaimsPayable).
 			Build(),
@@ -77,7 +81,7 @@ func main() {
 	fmt.Println("Scenario 1: Death Claim")
 	fmt.Println("========================")
 
-	deathClaimPolicyID := types.ToUint128(200001)
+	deathClaimPolicyID := types.ToUint128(baseID + 200001)
 	deathClaimPolicy := account.New(deathClaimPolicyID).
 		Ledger(insurance.LedgerINR).
 		Code(insurance.AccountCodePolicyActive).
@@ -90,7 +94,7 @@ func main() {
 	}
 
 	// Fund the policy with accumulated premiums
-	fundPolicy(c, deathClaimPolicyID, 500000) // ₹5,00,000 sum assured
+	fundPolicy(c, baseID, deathClaimPolicyID, 500000) // ₹5,00,000 sum assured
 
 	fmt.Println("Policy Details:")
 	fmt.Println("  Policy Number: 200001")
@@ -122,7 +126,7 @@ func main() {
 	fmt.Println("Scenario 2: Maturity Claim")
 	fmt.Println("===========================")
 
-	maturityPolicyID := types.ToUint128(200002)
+	maturityPolicyID := types.ToUint128(baseID + 200002)
 	maturityPolicy := account.New(maturityPolicyID).
 		Ledger(insurance.LedgerINR).
 		Code(insurance.AccountCodePolicyMatured).
@@ -135,7 +139,7 @@ func main() {
 	}
 
 	// Fund the policy with accumulated value
-	fundPolicy(c, maturityPolicyID, 1000000) // ₹10,00,000 maturity value
+	fundPolicy(c, baseID, maturityPolicyID, 1000000) // ₹10,00,000 maturity value
 
 	fmt.Println("Policy Details:")
 	fmt.Println("  Policy Number: 200002")
@@ -167,7 +171,7 @@ func main() {
 	fmt.Println("Scenario 3: Partial Withdrawal")
 	fmt.Println("===============================")
 
-	ulipPolicyID := types.ToUint128(200003)
+	ulipPolicyID := types.ToUint128(baseID + 200003)
 	ulipPolicy := account.New(ulipPolicyID).
 		Ledger(insurance.LedgerINR).
 		Code(insurance.AccountCodePolicyActive).
@@ -180,7 +184,7 @@ func main() {
 	}
 
 	// Fund the ULIP policy
-	fundPolicy(c, ulipPolicyID, 750000) // ₹7,50,000 fund value
+	fundPolicy(c, baseID, ulipPolicyID, 750000) // ₹7,50,000 fund value
 
 	fmt.Println("Policy Details:")
 	fmt.Println("  Policy Number: 200003")
@@ -213,7 +217,7 @@ func main() {
 	fmt.Println("Scenario 4: Surrender Value")
 	fmt.Println("============================")
 
-	surrenderPolicyID := types.ToUint128(200004)
+	surrenderPolicyID := types.ToUint128(baseID + 200004)
 	surrenderPolicy := account.New(surrenderPolicyID).
 		Ledger(insurance.LedgerINR).
 		Code(insurance.AccountCodePolicySurrendered).
@@ -226,7 +230,7 @@ func main() {
 	}
 
 	// Fund the policy
-	fundPolicy(c, surrenderPolicyID, 300000) // ₹3,00,000 accumulated
+	fundPolicy(c, baseID, surrenderPolicyID, 300000) // ₹3,00,000 accumulated
 
 	fmt.Println("Policy Details:")
 	fmt.Println("  Policy Number: 200004")
@@ -283,12 +287,12 @@ func main() {
 }
 
 // fundPolicy is a helper function to add funds to a policy account
-func fundPolicy(c *client.Client, policyID types.Uint128, amount uint64) {
+func fundPolicy(c *client.Client, baseID uint64, policyID types.Uint128, amount uint64) {
 	insuranceOps := insurance.NewOperations(c, insurance.LedgerINR)
 
 	// Simulate premium collection to fund the policy
-	// Use a fixed high base ID to avoid conflicts
-	transferID := uint64(5000000 + amount) // Simple unique ID generation
+	// Use baseID plus amount for unique transfer IDs
+	transferID := baseID + 5000000 + amount
 	if err := insuranceOps.CollectPremium(insurance.PremiumCollectionParams{
 		TransferID:      transferID,
 		PolicyAccountID: policyID,

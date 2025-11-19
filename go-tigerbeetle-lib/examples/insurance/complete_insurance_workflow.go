@@ -30,18 +30,22 @@ func main() {
 
 	fmt.Println("=== Insurance Management System Demo ===\n")
 
+	// Generate unique IDs based on timestamp to avoid conflicts with previous runs
+	baseID := uint64(time.Now().UnixNano())
+	fmt.Printf("Using base ID: %d (timestamp-based for uniqueness)\n\n", baseID)
+
 	// Step 1: Setup System Accounts
 	fmt.Println("Step 1: Setting up system accounts...")
-	if err := setupSystemAccounts(c); err != nil {
+	if err := setupSystemAccounts(c, baseID); err != nil {
 		log.Fatalf("Failed to setup system accounts: %v", err)
 	}
 	fmt.Println("✓ System accounts created\n")
 
 	// Step 2: Create Policy Accounts
 	fmt.Println("Step 2: Creating policy accounts...")
-	policy1ID := types.ToUint128(100001) // Policy #1
-	policy2ID := types.ToUint128(100002) // Policy #2
-	policy3ID := types.ToUint128(100003) // Policy #3
+	policy1ID := types.ToUint128(baseID + 100001) // Policy #1
+	policy2ID := types.ToUint128(baseID + 100002) // Policy #2
+	policy3ID := types.ToUint128(baseID + 100003) // Policy #3
 
 	if err := createPolicyAccounts(c, []types.Uint128{policy1ID, policy2ID, policy3ID}); err != nil {
 		log.Fatalf("Failed to create policy accounts: %v", err)
@@ -103,7 +107,7 @@ func main() {
 
 	// Step 5: Policy Revival (Policy lapsed, now being revived)
 	fmt.Println("Step 5: Reviving a lapsed policy...")
-	lapsedPolicyID := types.ToUint128(100004)
+	lapsedPolicyID := types.ToUint128(baseID + 100004)
 
 	// Create lapsed policy account
 	accountMgr := account.NewManager(c)
@@ -140,7 +144,7 @@ func main() {
 
 	// Step 6: Process a Maturity Claim
 	fmt.Println("Step 6: Processing maturity claim...")
-	maturedPolicyID := types.ToUint128(100005)
+	maturedPolicyID := types.ToUint128(baseID + 100005)
 
 	// Create matured policy with accumulated premiums
 	maturedPolicy := account.New(maturedPolicyID).
@@ -260,48 +264,48 @@ func main() {
 }
 
 // setupSystemAccounts creates all required system accounts
-func setupSystemAccounts(c *client.Client) error {
+func setupSystemAccounts(c *client.Client, baseID uint64) error {
 	accountMgr := account.NewManager(c)
 
 	systemAccounts := []types.Account{
 		// Payment collection accounts
-		account.New(types.ToUint128(uint64(insurance.AccountCodeCashCollection))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodeCashCollection))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodeCashCollection).
 			Build(),
-		account.New(types.ToUint128(uint64(insurance.AccountCodePaymentGateway))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodePaymentGateway))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodePaymentGateway).
 			Build(),
-		account.New(types.ToUint128(uint64(insurance.AccountCodeBankTransfer))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodeBankTransfer))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodeBankTransfer).
 			Build(),
-		account.New(types.ToUint128(uint64(insurance.AccountCodeAutoDebit))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodeAutoDebit))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodeAutoDebit).
 			Build(),
 
 		// Company accounts
-		account.New(types.ToUint128(uint64(insurance.AccountCodePremiumIncome))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodePremiumIncome))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodePremiumIncome).
 			Build(),
-		account.New(types.ToUint128(uint64(insurance.AccountCodeRevivalIncome))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodeRevivalIncome))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodeRevivalIncome).
 			Build(),
-		account.New(types.ToUint128(uint64(insurance.AccountCodePenaltyIncome))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodePenaltyIncome))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodePenaltyIncome).
 			Build(),
 
 		// Claims accounts
-		account.New(types.ToUint128(uint64(insurance.AccountCodeClaimsReserve))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodeClaimsReserve))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodeClaimsReserve).
 			Build(),
-		account.New(types.ToUint128(uint64(insurance.AccountCodeClaimsPayable))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodeClaimsPayable))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodeClaimsPayable).
 			Build(),

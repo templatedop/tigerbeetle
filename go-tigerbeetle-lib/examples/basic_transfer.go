@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"gitlab.cept.gov.in/it-2.0-common/ledgers/pkg/account"
 	"gitlab.cept.gov.in/it-2.0-common/ledgers/pkg/client"
@@ -22,17 +23,22 @@ func main() {
 	}
 	defer c.Close()
 
+	// Generate unique IDs based on current timestamp to avoid conflicts
+	baseID := uint64(time.Now().UnixNano())
+
+	fmt.Printf("Using base ID: %d (timestamp-based for uniqueness)\n", baseID)
+
 	// Create account manager
 	accountMgr := account.NewManager(c)
 
-	// Create two accounts
-	account1 := account.New(types.ToUint128(1)).
+	// Create two accounts with unique IDs
+	account1 := account.New(types.ToUint128(baseID)).
 		Ledger(1).
 		Code(1).
 		HistoryEnabled().
 		Build()
 
-	account2 := account.New(types.ToUint128(2)).
+	account2 := account.New(types.ToUint128(baseID + 1)).
 		Ledger(1).
 		Code(1).
 		HistoryEnabled().
@@ -53,10 +59,10 @@ func main() {
 
 	// Perform a simple transfer of 1000 from account 1 to account 2
 	err = transferMgr.SimpleTransfer(
-		types.ToUint128(1), // Transfer ID
-		types.ToUint128(1), // From account
-		types.ToUint128(2), // To account
-		types.ToUint128(1000), // Amount
+		types.ToUint128(baseID+1000), // Transfer ID (unique)
+		types.ToUint128(baseID),      // From account
+		types.ToUint128(baseID+1),    // To account
+		types.ToUint128(1000),         // Amount
 		1, // Ledger
 		1, // Code
 	)
@@ -67,18 +73,18 @@ func main() {
 	fmt.Println("Transfer completed successfully")
 
 	// Check balances
-	balance1, err := accountMgr.GetBalance(types.ToUint128(1))
+	balance1, err := accountMgr.GetBalance(types.ToUint128(baseID))
 	if err != nil {
 		log.Fatalf("Failed to get balance for account 1: %v", err)
 	}
 
-	balance2, err := accountMgr.GetBalance(types.ToUint128(2))
+	balance2, err := accountMgr.GetBalance(types.ToUint128(baseID + 1))
 	if err != nil {
 		log.Fatalf("Failed to get balance for account 2: %v", err)
 	}
 
-	fmt.Printf("Account 1 - Debits: %d, Credits: %d\n",
+	fmt.Printf("Account 1 - Debits: %v, Credits: %v\n",
 		balance1.Account.DebitsPosted, balance1.Account.CreditsPosted)
-	fmt.Printf("Account 2 - Debits: %d, Credits: %d\n",
+	fmt.Printf("Account 2 - Debits: %v, Credits: %v\n",
 		balance2.Account.DebitsPosted, balance2.Account.CreditsPosted)
 }

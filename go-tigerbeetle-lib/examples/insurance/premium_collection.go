@@ -30,35 +30,39 @@ func main() {
 
 	fmt.Println("=== Insurance Premium Collection Demo ===\n")
 
+	// Generate unique IDs based on timestamp to avoid conflicts with previous runs
+	baseID := uint64(time.Now().UnixNano())
+	fmt.Printf("Using base ID: %d (timestamp-based for uniqueness)\n\n", baseID)
+
 	// Setup: Create payment collection accounts and company accounts
 	fmt.Println("Setting up payment collection accounts...")
 	accountMgr := account.NewManager(c)
 
 	paymentAccounts := []types.Account{
 		// Payment collection accounts
-		account.New(types.ToUint128(uint64(insurance.AccountCodeCashCollection))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodeCashCollection))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodeCashCollection).
 			Build(),
-		account.New(types.ToUint128(uint64(insurance.AccountCodePaymentGateway))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodePaymentGateway))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodePaymentGateway).
 			Build(),
-		account.New(types.ToUint128(uint64(insurance.AccountCodeBankTransfer))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodeBankTransfer))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodeBankTransfer).
 			Build(),
-		account.New(types.ToUint128(uint64(insurance.AccountCodeAutoDebit))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodeAutoDebit))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodeAutoDebit).
 			Build(),
-		account.New(types.ToUint128(uint64(insurance.AccountCodeCheque))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodeCheque))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodeCheque).
 			Build(),
 
 		// Premium income account
-		account.New(types.ToUint128(uint64(insurance.AccountCodePremiumIncome))).
+		account.New(types.ToUint128(baseID + uint64(insurance.AccountCodePremiumIncome))).
 			Ledger(insurance.LedgerINR).
 			Code(insurance.AccountCodePremiumIncome).
 			Build(),
@@ -72,11 +76,11 @@ func main() {
 	// Create sample policy accounts
 	fmt.Println("Creating policy accounts...")
 	policyIDs := []types.Uint128{
-		types.ToUint128(100001), // Policy #1
-		types.ToUint128(100002), // Policy #2
-		types.ToUint128(100003), // Policy #3
-		types.ToUint128(100004), // Policy #4
-		types.ToUint128(100005), // Policy #5
+		types.ToUint128(baseID + 100001), // Policy #1
+		types.ToUint128(baseID + 100002), // Policy #2
+		types.ToUint128(baseID + 100003), // Policy #3
+		types.ToUint128(baseID + 100004), // Policy #4
+		types.ToUint128(baseID + 100005), // Policy #5
 	}
 
 	var policies []types.Account
@@ -102,7 +106,7 @@ func main() {
 	fmt.Println("Example 1: Collecting premium via CASH")
 	fmt.Println("----------------------------------------")
 	if err := insuranceOps.CollectPremium(insurance.PremiumCollectionParams{
-		TransferID:      1000,
+		TransferID:      baseID + 1000,
 		PolicyAccountID: policyIDs[0],
 		Amount:          types.ToUint128(5000), // ₹5,000
 		PaymentMethod:   insurance.PaymentMethodCash,
@@ -120,7 +124,7 @@ func main() {
 	fmt.Println("Example 2: Collecting premium via PAYMENT GATEWAY")
 	fmt.Println("--------------------------------------------------")
 	if err := insuranceOps.CollectPremium(insurance.PremiumCollectionParams{
-		TransferID:      1002,
+		TransferID:      baseID + 1002,
 		PolicyAccountID: policyIDs[1],
 		Amount:          types.ToUint128(10000), // ₹10,000
 		PaymentMethod:   insurance.PaymentMethodPaymentGateway,
@@ -138,7 +142,7 @@ func main() {
 	fmt.Println("Example 3: Collecting premium via BANK TRANSFER")
 	fmt.Println("------------------------------------------------")
 	if err := insuranceOps.CollectPremium(insurance.PremiumCollectionParams{
-		TransferID:      1004,
+		TransferID:      baseID + 1004,
 		PolicyAccountID: policyIDs[2],
 		Amount:          types.ToUint128(7500), // ₹7,500
 		PaymentMethod:   insurance.PaymentMethodBankTransfer,
@@ -156,7 +160,7 @@ func main() {
 	fmt.Println("Example 4: Collecting premium via AUTO-DEBIT")
 	fmt.Println("---------------------------------------------")
 	if err := insuranceOps.CollectPremium(insurance.PremiumCollectionParams{
-		TransferID:      1006,
+		TransferID:      baseID + 1006,
 		PolicyAccountID: policyIDs[3],
 		Amount:          types.ToUint128(12000), // ₹12,000
 		PaymentMethod:   insurance.PaymentMethodAutoDebit,
@@ -174,7 +178,7 @@ func main() {
 	fmt.Println("Example 5: Collecting premium via CHEQUE")
 	fmt.Println("-----------------------------------------")
 	if err := insuranceOps.CollectPremium(insurance.PremiumCollectionParams{
-		TransferID:      1008,
+		TransferID:      baseID + 1008,
 		PolicyAccountID: policyIDs[4],
 		Amount:          types.ToUint128(8500), // ₹8,500
 		PaymentMethod:   insurance.PaymentMethodCheque,
@@ -231,7 +235,7 @@ func main() {
 	}
 
 	errors, err := insuranceOps.CollectMonthlyPremiums(insurance.MonthlyPremiumCollectionParams{
-		BaseTransferID: 2000,
+		BaseTransferID: baseID + 2000,
 		Premiums:       premiums,
 		Month:          time.February,
 		Year:           2024,
