@@ -13,8 +13,8 @@ const (
 
 // BatchClient defines the interface for batch operations
 type BatchClient interface {
-	CreateAccounts([]types.Account) ([]types.CreateAccountsError, error)
-	CreateTransfers([]types.Transfer) ([]types.CreateTransfersError, error)
+	CreateAccounts([]types.Account) ([]types.AccountEventResult, error)
+	CreateTransfers([]types.Transfer) ([]types.TransferEventResult, error)
 }
 
 // AccountBatcher helps batch account creation operations
@@ -38,7 +38,7 @@ func NewAccountBatcher(client BatchClient, batchSize int) *AccountBatcher {
 
 // Add adds an account to the batch
 // If the batch is full, it automatically flushes
-func (b *AccountBatcher) Add(account types.Account) ([]types.CreateAccountsError, error) {
+func (b *AccountBatcher) Add(account types.Account) ([]types.AccountEventResult, error) {
 	b.accounts = append(b.accounts, account)
 	if len(b.accounts) >= b.batchSize {
 		return b.Flush()
@@ -47,7 +47,7 @@ func (b *AccountBatcher) Add(account types.Account) ([]types.CreateAccountsError
 }
 
 // Flush sends all pending accounts to TigerBeetle
-func (b *AccountBatcher) Flush() ([]types.CreateAccountsError, error) {
+func (b *AccountBatcher) Flush() ([]types.AccountEventResult, error) {
 	if len(b.accounts) == 0 {
 		return nil, nil
 	}
@@ -83,7 +83,7 @@ func NewTransferBatcher(client BatchClient, batchSize int) *TransferBatcher {
 
 // Add adds a transfer to the batch
 // If the batch is full, it automatically flushes
-func (b *TransferBatcher) Add(transfer types.Transfer) ([]types.CreateTransfersError, error) {
+func (b *TransferBatcher) Add(transfer types.Transfer) ([]types.TransferEventResult, error) {
 	b.transfers = append(b.transfers, transfer)
 	if len(b.transfers) >= b.batchSize {
 		return b.Flush()
@@ -92,7 +92,7 @@ func (b *TransferBatcher) Add(transfer types.Transfer) ([]types.CreateTransfersE
 }
 
 // Flush sends all pending transfers to TigerBeetle
-func (b *TransferBatcher) Flush() ([]types.CreateTransfersError, error) {
+func (b *TransferBatcher) Flush() ([]types.TransferEventResult, error) {
 	if len(b.transfers) == 0 {
 		return nil, nil
 	}
@@ -125,8 +125,8 @@ func NewProcessor(client BatchClient, batchSize int) *Processor {
 }
 
 // ProcessAccounts processes a large slice of accounts in batches
-func (p *Processor) ProcessAccounts(accounts []types.Account) ([]types.CreateAccountsError, error) {
-	var allErrors []types.CreateAccountsError
+func (p *Processor) ProcessAccounts(accounts []types.Account) ([]types.AccountEventResult, error) {
+	var allErrors []types.AccountEventResult
 
 	for i := 0; i < len(accounts); i += p.batchSize {
 		end := i + p.batchSize
@@ -151,8 +151,8 @@ func (p *Processor) ProcessAccounts(accounts []types.Account) ([]types.CreateAcc
 }
 
 // ProcessTransfers processes a large slice of transfers in batches
-func (p *Processor) ProcessTransfers(transfers []types.Transfer) ([]types.CreateTransfersError, error) {
-	var allErrors []types.CreateTransfersError
+func (p *Processor) ProcessTransfers(transfers []types.Transfer) ([]types.TransferEventResult, error) {
+	var allErrors []types.TransferEventResult
 
 	for i := 0; i < len(transfers); i += p.batchSize {
 		end := i + p.batchSize
@@ -203,7 +203,7 @@ func (c *LinkedChain) Build() []types.Transfer {
 
 	// Set linked flag on all transfers except the last
 	for i := 0; i < len(c.transfers)-1; i++ {
-		c.transfers[i].Flags.Linked = true
+		c.transfers[i].Flags |= types.TransferFlags{Linked: true}.ToUint16()
 	}
 
 	return c.transfers
@@ -215,7 +215,7 @@ func (c *LinkedChain) Len() int {
 }
 
 // Execute executes the linked chain atomically
-func (c *LinkedChain) Execute(client BatchClient) ([]types.CreateTransfersError, error) {
+func (c *LinkedChain) Execute(client BatchClient) ([]types.TransferEventResult, error) {
 	if len(c.transfers) == 0 {
 		return nil, fmt.Errorf("cannot execute empty chain")
 	}

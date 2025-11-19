@@ -22,7 +22,6 @@ Create a client and start transacting:
 	c, _ := client.New(client.Config{
 		ClusterID:      types.ToUint128(0),
 		ReplicaAddrs:   []string{"3000"},
-		MaxConcurrency: 32,
 	})
 	defer c.Close()
 

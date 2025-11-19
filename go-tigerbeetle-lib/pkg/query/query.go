@@ -38,19 +38,19 @@ func (b *AccountFilterBuilder) Limit(limit uint32) *AccountFilterBuilder {
 
 // Debits filters for transfers where the account is debited
 func (b *AccountFilterBuilder) Debits() *AccountFilterBuilder {
-	b.filter.Flags = types.AccountFilterFlags{Debits: true}
+	b.filter.Flags = types.AccountFilterFlags{Debits: true}.ToUint32()
 	return b
 }
 
 // Credits filters for transfers where the account is credited
 func (b *AccountFilterBuilder) Credits() *AccountFilterBuilder {
-	b.filter.Flags = types.AccountFilterFlags{Credits: true}
+	b.filter.Flags = types.AccountFilterFlags{Credits: true}.ToUint32()
 	return b
 }
 
 // Reversed returns results in reverse chronological order
 func (b *AccountFilterBuilder) Reversed() *AccountFilterBuilder {
-	b.filter.Flags = types.AccountFilterFlags{Reversed: true}
+	b.filter.Flags = types.AccountFilterFlags{Reversed: true}.ToUint32()
 	return b
 }
 
@@ -121,7 +121,7 @@ func (b *QueryFilterBuilder) Limit(limit uint32) *QueryFilterBuilder {
 
 // Reversed returns results in reverse chronological order
 func (b *QueryFilterBuilder) Reversed() *QueryFilterBuilder {
-	b.filter.Flags = types.QueryFilterFlags{Reversed: true}
+	b.filter.Flags = types.QueryFilterFlags{Reversed: true}.ToUint32()
 	return b
 }
 

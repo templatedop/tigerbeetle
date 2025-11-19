@@ -23,16 +23,18 @@ func TestLinkedChain(t *testing.T) {
 
 	transfers := chain.Build()
 
+	linkedFlag := types.TransferFlags{Linked: true}.ToUint16()
+
 	// First two should be linked
-	if !transfers[0].Flags.Linked {
+	if (transfers[0].Flags & linkedFlag) == 0 {
 		t.Error("Expected first transfer to be linked")
 	}
-	if !transfers[1].Flags.Linked {
+	if (transfers[1].Flags & linkedFlag) == 0 {
 		t.Error("Expected second transfer to be linked")
 	}
 
 	// Last should not be linked
-	if transfers[2].Flags.Linked {
+	if (transfers[2].Flags & linkedFlag) != 0 {
 		t.Error("Expected last transfer to not be linked")
 	}
 }

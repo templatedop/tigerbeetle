@@ -16,8 +16,8 @@ func TestAccountBuilder(t *testing.T) {
 		HistoryEnabled().
 		Build()
 
-	if account.ID.ToUint128() != 123 {
-		t.Errorf("Expected ID 123, got %d", account.ID.ToUint128())
+	if account.ID[0] != 123 {
+		t.Errorf("Expected ID 123, got %d", account.ID[0])
 	}
 
 	if account.Ledger != 1 {

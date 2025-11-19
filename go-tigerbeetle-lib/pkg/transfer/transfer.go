@@ -79,34 +79,34 @@ func (b *Builder) UserData32(data uint32) *Builder {
 // Timeout sets the timeout for pending transfers
 // Only valid for pending transfers
 func (b *Builder) Timeout(timeout time.Duration) *Builder {
-	b.transfer.Timeout = uint64(timeout.Nanoseconds())
+	b.transfer.Timeout = uint32(timeout.Nanoseconds())
 	return b
 }
 
 // Flags sets the transfer flags
 func (b *Builder) Flags(flags types.TransferFlags) *Builder {
-	b.transfer.Flags = flags
+	b.transfer.Flags = flags.ToUint16()
 	return b
 }
 
 // Linked marks this transfer as part of a linked chain
 // Linked transfers execute atomically - all succeed or all fail
 func (b *Builder) Linked() *Builder {
-	b.transfer.Flags |= types.TransferFlags{Linked: true}
+	b.transfer.Flags |= types.TransferFlags{Linked: true}.ToUint16()
 	return b
 }
 
 // Pending marks this as a two-phase pending transfer
 // Reserves funds without immediately posting them
 func (b *Builder) Pending() *Builder {
-	b.transfer.Flags |= types.TransferFlags{Pending: true}
+	b.transfer.Flags |= types.TransferFlags{Pending: true}.ToUint16()
 	return b
 }
 
 // PostPending marks this transfer as posting a pending transfer
 // Moves funds from pending to posted
 func (b *Builder) PostPending(pendingID types.Uint128) *Builder {
-	b.transfer.Flags |= types.TransferFlags{PostPendingTransfer: true}
+	b.transfer.Flags |= types.TransferFlags{PostPendingTransfer: true}.ToUint16()
 	b.transfer.PendingID = pendingID
 	return b
 }
@@ -114,20 +114,20 @@ func (b *Builder) PostPending(pendingID types.Uint128) *Builder {
 // VoidPending marks this transfer as voiding a pending transfer
 // Cancels a pending transfer without posting it
 func (b *Builder) VoidPending(pendingID types.Uint128) *Builder {
-	b.transfer.Flags |= types.TransferFlags{VoidPendingTransfer: true}
+	b.transfer.Flags |= types.TransferFlags{VoidPendingTransfer: true}.ToUint16()
 	b.transfer.PendingID = pendingID
 	return b
 }
 
 // BalancingDebit allows the debit account to exceed its credits
 func (b *Builder) BalancingDebit() *Builder {
-	b.transfer.Flags |= types.TransferFlags{BalancingDebit: true}
+	b.transfer.Flags |= types.TransferFlags{BalancingDebit: true}.ToUint16()
 	return b
 }
 
 // BalancingCredit allows the credit account to exceed its debits
 func (b *Builder) BalancingCredit() *Builder {
-	b.transfer.Flags |= types.TransferFlags{BalancingCredit: true}
+	b.transfer.Flags |= types.TransferFlags{BalancingCredit: true}.ToUint16()
 	return b
 }
 
@@ -143,7 +143,7 @@ type Manager struct {
 
 // TransferClient defines the interface for transfer operations
 type TransferClient interface {
-	CreateTransfers([]types.Transfer) ([]types.CreateTransfersError, error)
+	CreateTransfers([]types.Transfer) ([]types.TransferEventResult, error)
 	LookupTransfers([]types.Uint128) ([]types.Transfer, error)
 	QueryTransfers(types.QueryFilter) ([]types.Transfer, error)
 	GetAccountTransfers(types.AccountFilter) ([]types.Transfer, error)
@@ -170,7 +170,7 @@ func (m *Manager) Create(transfer types.Transfer) error {
 }
 
 // CreateBatch creates multiple transfers
-func (m *Manager) CreateBatch(transfers []types.Transfer) ([]types.CreateTransfersError, error) {
+func (m *Manager) CreateBatch(transfers []types.Transfer) ([]types.TransferEventResult, error) {
 	return m.client.CreateTransfers(transfers)
 }
 

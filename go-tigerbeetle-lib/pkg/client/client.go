@@ -15,9 +15,8 @@ type Client struct {
 
 // Config holds client configuration
 type Config struct {
-	ClusterID      uint128
-	ReplicaAddrs   []string
-	MaxConcurrency uint
+	ClusterID    uint128
+	ReplicaAddrs []string
 }
 
 // uint128 represents a 128-bit unsigned integer
@@ -29,14 +28,9 @@ func New(config Config) (*Client, error) {
 		return nil, fmt.Errorf("at least one replica address is required")
 	}
 
-	if config.MaxConcurrency == 0 {
-		config.MaxConcurrency = 32 // Default concurrency
-	}
-
 	tbClient, err := tb.NewClient(
 		config.ClusterID,
 		config.ReplicaAddrs,
-		config.MaxConcurrency,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create TigerBeetle client: %w", err)
@@ -59,7 +53,7 @@ func (c *Client) NativeClient() tb.Client {
 }
 
 // CreateAccounts creates one or more accounts in TigerBeetle
-func (c *Client) CreateAccounts(accounts []types.Account) ([]types.CreateAccountsError, error) {
+func (c *Client) CreateAccounts(accounts []types.Account) ([]types.AccountEventResult, error) {
 	results, err := c.tb.CreateAccounts(accounts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create accounts: %w", err)
@@ -68,7 +62,7 @@ func (c *Client) CreateAccounts(accounts []types.Account) ([]types.CreateAccount
 }
 
 // CreateTransfers creates one or more transfers in TigerBeetle
-func (c *Client) CreateTransfers(transfers []types.Transfer) ([]types.CreateTransfersError, error) {
+func (c *Client) CreateTransfers(transfers []types.Transfer) ([]types.TransferEventResult, error) {
 	results, err := c.tb.CreateTransfers(transfers)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create transfers: %w", err)

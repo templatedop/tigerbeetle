@@ -21,20 +21,20 @@ func TestTransferBuilder(t *testing.T) {
 		Code(10).
 		Build()
 
-	if transfer.ID.ToUint128() != 100 {
-		t.Errorf("Expected ID 100, got %d", transfer.ID.ToUint128())
+	if transfer.ID[0] != 100 {
+		t.Errorf("Expected ID 100, got %d", transfer.ID[0])
 	}
 
-	if transfer.DebitAccountID.ToUint128() != 1 {
-		t.Errorf("Expected DebitAccountID 1, got %d", transfer.DebitAccountID.ToUint128())
+	if transfer.DebitAccountID[0] != 1 {
+		t.Errorf("Expected DebitAccountID 1, got %d", transfer.DebitAccountID[0])
 	}
 
-	if transfer.CreditAccountID.ToUint128() != 2 {
-		t.Errorf("Expected CreditAccountID 2, got %d", transfer.CreditAccountID.ToUint128())
+	if transfer.CreditAccountID[0] != 2 {
+		t.Errorf("Expected CreditAccountID 2, got %d", transfer.CreditAccountID[0])
 	}
 
-	if transfer.Amount.ToUint128() != 1000 {
-		t.Errorf("Expected Amount 1000, got %d", transfer.Amount.ToUint128())
+	if transfer.Amount[0] != 1000 {
+		t.Errorf("Expected Amount 1000, got %d", transfer.Amount[0])
 	}
 
 	if transfer.Ledger != 1 {
@@ -59,11 +59,12 @@ func TestTransferBuilderPending(t *testing.T) {
 		Timeout(timeout).
 		Build()
 
-	if !transfer.Flags.Pending {
+	pendingFlag := types.TransferFlags{Pending: true}.ToUint16()
+	if (transfer.Flags & pendingFlag) == 0 {
 		t.Error("Expected Pending flag to be set")
 	}
 
-	expectedTimeout := uint64(timeout.Nanoseconds())
+	expectedTimeout := uint32(timeout.Nanoseconds())
 	if transfer.Timeout != expectedTimeout {
 		t.Errorf("Expected Timeout %d, got %d", expectedTimeout, transfer.Timeout)
 	}
@@ -74,7 +75,8 @@ func TestTransferBuilderLinked(t *testing.T) {
 		Linked().
 		Build()
 
-	if !transfer.Flags.Linked {
+	linkedFlag := types.TransferFlags{Linked: true}.ToUint16()
+	if (transfer.Flags & linkedFlag) == 0 {
 		t.Error("Expected Linked flag to be set")
 	}
 }
@@ -86,12 +88,13 @@ func TestTransferBuilderPostPending(t *testing.T) {
 		PostPending(pendingID).
 		Build()
 
-	if !transfer.Flags.PostPendingTransfer {
+	postPendingFlag := types.TransferFlags{PostPendingTransfer: true}.ToUint16()
+	if (transfer.Flags & postPendingFlag) == 0 {
 		t.Error("Expected PostPendingTransfer flag to be set")
 	}
 
-	if transfer.PendingID.ToUint128() != 999 {
-		t.Errorf("Expected PendingID 999, got %d", transfer.PendingID.ToUint128())
+	if transfer.PendingID[0] != 999 {
+		t.Errorf("Expected PendingID 999, got %d", transfer.PendingID[0])
 	}
 }
 
@@ -102,12 +105,13 @@ func TestTransferBuilderVoidPending(t *testing.T) {
 		VoidPending(pendingID).
 		Build()
 
-	if !transfer.Flags.VoidPendingTransfer {
+	voidPendingFlag := types.TransferFlags{VoidPendingTransfer: true}.ToUint16()
+	if (transfer.Flags & voidPendingFlag) == 0 {
 		t.Error("Expected VoidPendingTransfer flag to be set")
 	}
 
-	if transfer.PendingID.ToUint128() != 888 {
-		t.Errorf("Expected PendingID 888, got %d", transfer.PendingID.ToUint128())
+	if transfer.PendingID[0] != 888 {
+		t.Errorf("Expected PendingID 888, got %d", transfer.PendingID[0])
 	}
 }
 
@@ -128,7 +132,7 @@ func TestAmountUint64(t *testing.T) {
 		AmountUint64(12345).
 		Build()
 
-	if transfer.Amount.ToUint128() != 12345 {
-		t.Errorf("Expected Amount 12345, got %d", transfer.Amount.ToUint128())
+	if transfer.Amount[0] != 12345 {
+		t.Errorf("Expected Amount 12345, got %d", transfer.Amount[0])
 	}
 }

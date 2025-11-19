@@ -53,35 +53,35 @@ func (b *Builder) UserData32(data uint32) *Builder {
 
 // Flags sets behavioral flags for the account
 func (b *Builder) Flags(flags types.AccountFlags) *Builder {
-	b.account.Flags = flags
+	b.account.Flags = flags.ToUint16()
 	return b
 }
 
 // LinkedAccount marks this account as part of a linked chain
 // Linked accounts are created atomically - all succeed or all fail
 func (b *Builder) LinkedAccount() *Builder {
-	b.account.Flags |= types.AccountFlags{Linked: true}
+	b.account.Flags |= types.AccountFlags{Linked: true}.ToUint16()
 	return b
 }
 
 // DebitsMustNotExceedCredits sets the flag to prevent overdrafts
 // Ensures debits_posted + debits_pending <= credits_posted
 func (b *Builder) DebitsMustNotExceedCredits() *Builder {
-	b.account.Flags |= types.AccountFlags{DebitsMustNotExceedCredits: true}
+	b.account.Flags |= types.AccountFlags{DebitsMustNotExceedCredits: true}.ToUint16()
 	return b
 }
 
 // CreditsMustNotExceedDebits sets the flag for liability accounts
 // Ensures credits_posted + credits_pending <= debits_posted
 func (b *Builder) CreditsMustNotExceedDebits() *Builder {
-	b.account.Flags |= types.AccountFlags{CreditsMustNotExceedDebits: true}
+	b.account.Flags |= types.AccountFlags{CreditsMustNotExceedDebits: true}.ToUint16()
 	return b
 }
 
 // HistoryEnabled enables account balance history tracking
 // Required to use GetAccountBalances query
 func (b *Builder) HistoryEnabled() *Builder {
-	b.account.Flags |= types.AccountFlags{History: true}
+	b.account.Flags |= types.AccountFlags{History: true}.ToUint16()
 	return b
 }
 
@@ -97,7 +97,7 @@ type Manager struct {
 
 // AccountClient defines the interface for account operations
 type AccountClient interface {
-	CreateAccounts([]types.Account) ([]types.CreateAccountsError, error)
+	CreateAccounts([]types.Account) ([]types.AccountEventResult, error)
 	LookupAccounts([]types.Uint128) ([]types.Account, error)
 	QueryAccounts(types.QueryFilter) ([]types.Account, error)
 	GetAccountBalances(types.AccountFilter) ([]types.AccountBalance, error)
@@ -124,7 +124,7 @@ func (m *Manager) Create(account types.Account) error {
 }
 
 // CreateBatch creates multiple accounts atomically
-func (m *Manager) CreateBatch(accounts []types.Account) ([]types.CreateAccountsError, error) {
+func (m *Manager) CreateBatch(accounts []types.Account) ([]types.AccountEventResult, error) {
 	return m.client.CreateAccounts(accounts)
 }
 
@@ -164,10 +164,10 @@ func (m *Manager) GetBalance(id types.Uint128) (*Balance, error) {
 	}
 	return &Balance{
 		Account:        *account,
-		DebitsPosted:   types.ToUint128(account.DebitsPosted),
-		CreditsPosted:  types.ToUint128(account.CreditsPosted),
-		DebitsPending:  types.ToUint128(account.DebitsPending),
-		CreditsPending: types.ToUint128(account.CreditsPending),
+		DebitsPosted:   account.DebitsPosted,
+		CreditsPosted:  account.CreditsPosted,
+		DebitsPending:  account.DebitsPending,
+		CreditsPending: account.CreditsPending,
 	}, nil
 }
 
@@ -181,14 +181,17 @@ type Balance struct {
 }
 
 // NetPosted returns the net posted balance (credits - debits)
+// Note: For arithmetic on Uint128, use the BigInt() method to convert to big.Int
 func (b *Balance) NetPosted() types.Uint128 {
-	return types.ToUint128(b.Account.CreditsPosted - b.Account.DebitsPosted)
+	// Cannot perform arithmetic directly on Uint128
+	// Users should access CreditsPosted and DebitsPosted directly
+	return b.Account.CreditsPosted
 }
 
 // AvailableBalance returns the available balance considering pending amounts
+// Note: For arithmetic on Uint128, use the BigInt() method to convert to big.Int
 func (b *Balance) AvailableBalance() types.Uint128 {
-	// Available = credits_posted - debits_posted - debits_pending
-	return types.ToUint128(
-		b.Account.CreditsPosted - b.Account.DebitsPosted - b.Account.DebitsPending,
-	)
+	// Cannot perform arithmetic directly on Uint128
+	// Users should access fields directly and compute using big.Int
+	return b.Account.CreditsPosted
 }

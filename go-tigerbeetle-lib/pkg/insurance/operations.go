@@ -11,8 +11,8 @@ import (
 
 // InsuranceClient defines the interface for insurance operations
 type InsuranceClient interface {
-	CreateAccounts([]types.Account) ([]types.CreateAccountsError, error)
-	CreateTransfers([]types.Transfer) ([]types.CreateTransfersError, error)
+	CreateAccounts([]types.Account) ([]types.AccountEventResult, error)
+	CreateTransfers([]types.Transfer) ([]types.TransferEventResult, error)
 	LookupAccounts([]types.Uint128) ([]types.Account, error)
 	LookupTransfers([]types.Uint128) ([]types.Transfer, error)
 }
@@ -260,7 +260,7 @@ type PolicyPremium struct {
 }
 
 // CollectMonthlyPremiums collects premiums for multiple policies in a batch
-func (o *Operations) CollectMonthlyPremiums(params MonthlyPremiumCollectionParams) ([]types.CreateTransfersError, error) {
+func (o *Operations) CollectMonthlyPremiums(params MonthlyPremiumCollectionParams) ([]types.TransferEventResult, error) {
 	var allTransfers []types.Transfer
 	baseID := params.BaseTransferID.ToUint128()
 	transferIndex := uint64(0)

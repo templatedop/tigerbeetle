@@ -16,7 +16,6 @@ func main() {
 	c, err := client.New(client.Config{
 		ClusterID:    types.ToUint128(0),
 		ReplicaAddrs: []string{"3000"},
-		MaxConcurrency: 32,
 	})
 	if err != nil {
 		log.Fatalf("Failed to create client: %v", err)

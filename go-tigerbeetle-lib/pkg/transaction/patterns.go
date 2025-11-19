@@ -10,7 +10,7 @@ import (
 
 // TransactionClient defines the interface for transaction operations
 type TransactionClient interface {
-	CreateTransfers([]types.Transfer) ([]types.CreateTransfersError, error)
+	CreateTransfers([]types.Transfer) ([]types.TransferEventResult, error)
 	LookupTransfers([]types.Uint128) ([]types.Transfer, error)
 }
 
@@ -60,6 +60,7 @@ func (p *Patterns) Escrow(params EscrowParams) error {
 
 // ReleaseEscrow releases escrowed funds to the final recipient
 func (p *Patterns) ReleaseEscrow(
+	postID types.Uint128,
 	releaseID types.Uint128,
 	escrowID types.Uint128,
 	escrowAccount types.Uint128,
@@ -69,12 +70,12 @@ func (p *Patterns) ReleaseEscrow(
 	code uint16,
 ) error {
 	// Post the pending transfer and create a linked transfer to the recipient
-	postTransfer := transfer.New(releaseID).
+	postTransfer := transfer.New(postID).
 		PostPending(escrowID).
 		Linked().
 		Build()
 
-	releaseTransfer := transfer.New(types.ToUint128(uint64(releaseID.ToUint128()) + 1)).
+	releaseTransfer := transfer.New(releaseID).
 		DebitAccount(escrowAccount).
 		CreditAccount(recipientAccount).
 		Amount(amount).
@@ -143,7 +144,7 @@ func (p *Patterns) Refund(params RefundParams) error {
 
 // MultiPartyTransferParams contains parameters for a multi-party split transfer
 type MultiPartyTransferParams struct {
-	BaseID      types.Uint128
+	BaseID      uint64 // Base ID for generating sequential transfer IDs
 	FromAccount types.Uint128
 	Recipients  []Recipient
 	Ledger      uint32
@@ -164,10 +165,9 @@ func (p *Patterns) MultiPartyTransfer(params MultiPartyTransferParams) error {
 	}
 
 	transfers := make([]types.Transfer, len(params.Recipients))
-	baseIDValue := params.BaseID.ToUint128()
 
 	for i, recipient := range params.Recipients {
-		transferID := types.ToUint128(baseIDValue + uint64(i))
+		transferID := types.ToUint128(params.BaseID + uint64(i))
 		builder := transfer.New(transferID).
 			DebitAccount(params.FromAccount).
 			CreditAccount(recipient.AccountID).
@@ -196,7 +196,8 @@ func (p *Patterns) MultiPartyTransfer(params MultiPartyTransferParams) error {
 
 // ExchangeParams contains parameters for a currency exchange transaction
 type ExchangeParams struct {
-	BaseID              types.Uint128
+	Transfer1ID         types.Uint128
+	Transfer2ID         types.Uint128
 	FromAccount         types.Uint128
 	ToAccount           types.Uint128
 	IntermediaryAccount types.Uint128
@@ -210,10 +211,8 @@ type ExchangeParams struct {
 // CurrencyExchange performs a two-ledger currency exchange via an intermediary account
 // This atomically debits one currency and credits another
 func (p *Patterns) CurrencyExchange(params ExchangeParams) error {
-	baseIDValue := params.BaseID.ToUint128()
-
 	// Transfer from source account to intermediary (source currency)
-	transfer1 := transfer.New(params.BaseID).
+	transfer1 := transfer.New(params.Transfer1ID).
 		DebitAccount(params.FromAccount).
 		CreditAccount(params.IntermediaryAccount).
 		Amount(params.FromAmount).
@@ -223,7 +222,7 @@ func (p *Patterns) CurrencyExchange(params ExchangeParams) error {
 		Build()
 
 	// Transfer from intermediary to destination (destination currency)
-	transfer2 := transfer.New(types.ToUint128(baseIDValue + 1)).
+	transfer2 := transfer.New(params.Transfer2ID).
 		DebitAccount(params.IntermediaryAccount).
 		CreditAccount(params.ToAccount).
 		Amount(params.ToAmount).
