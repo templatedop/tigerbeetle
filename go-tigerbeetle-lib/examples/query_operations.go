@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/tigerbeetle/go-tigerbeetle-lib/pkg/account"
-	"github.com/tigerbeetle/go-tigerbeetle-lib/pkg/client"
-	"github.com/tigerbeetle/go-tigerbeetle-lib/pkg/query"
-	"github.com/tigerbeetle/go-tigerbeetle-lib/pkg/transfer"
+	"gitlab.cept.gov.in/it-2.0-common/ledgers/pkg/account"
+	"gitlab.cept.gov.in/it-2.0-common/ledgers/pkg/client"
+	"gitlab.cept.gov.in/it-2.0-common/ledgers/pkg/query"
+	"gitlab.cept.gov.in/it-2.0-common/ledgers/pkg/transfer"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 )
 

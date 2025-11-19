@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tigerbeetle/go-tigerbeetle-lib/pkg/transfer"
+	"gitlab.cept.gov.in/it-2.0-common/ledgers/pkg/transfer"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 )
 

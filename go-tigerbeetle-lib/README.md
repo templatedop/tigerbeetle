@@ -20,7 +20,7 @@ A comprehensive, high-level Go library for interacting with TigerBeetle, the dis
 ## Installation
 
 ```bash
-go get github.com/tigerbeetle/go-tigerbeetle-lib
+go get gitlab.cept.gov.in/it-2.0-common/ledgers
 ```
 
 ## Quick Start
@@ -29,7 +29,7 @@ go get github.com/tigerbeetle/go-tigerbeetle-lib
 
 ```go
 import (
-    "github.com/tigerbeetle/go-tigerbeetle-lib/pkg/client"
+    "gitlab.cept.gov.in/it-2.0-common/ledgers/pkg/client"
     "github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 )
 
@@ -49,7 +49,7 @@ defer c.Close()
 
 ```go
 import (
-    "github.com/tigerbeetle/go-tigerbeetle-lib/pkg/account"
+    "gitlab.cept.gov.in/it-2.0-common/ledgers/pkg/account"
 )
 
 // Create account manager
@@ -73,7 +73,7 @@ if err := accountMgr.Create(account); err != nil {
 
 ```go
 import (
-    "github.com/tigerbeetle/go-tigerbeetle-lib/pkg/transfer"
+    "gitlab.cept.gov.in/it-2.0-common/ledgers/pkg/transfer"
 )
 
 // Create transfer manager
@@ -96,7 +96,7 @@ err := transferMgr.SimpleTransfer(
 
 ```go
 import (
-    "github.com/tigerbeetle/go-tigerbeetle-lib/pkg/transaction"
+    "gitlab.cept.gov.in/it-2.0-common/ledgers/pkg/transaction"
     "time"
 )
 
@@ -159,7 +159,7 @@ if err := txPatterns.MultiPartyTransfer(multiPartyParams); err != nil {
 
 ```go
 import (
-    "github.com/tigerbeetle/go-tigerbeetle-lib/pkg/batch"
+    "gitlab.cept.gov.in/it-2.0-common/ledgers/pkg/batch"
 )
 
 // Create batch processor
@@ -181,7 +181,7 @@ batcher.Flush() // Flush remaining
 
 ```go
 import (
-    "github.com/tigerbeetle/go-tigerbeetle-lib/pkg/query"
+    "gitlab.cept.gov.in/it-2.0-common/ledgers/pkg/query"
 )
 
 queryHelper := query.NewHelper(c)

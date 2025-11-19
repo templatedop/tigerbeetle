@@ -5,9 +5,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/tigerbeetle/go-tigerbeetle-lib/pkg/account"
-	"github.com/tigerbeetle/go-tigerbeetle-lib/pkg/client"
-	"github.com/tigerbeetle/go-tigerbeetle-lib/pkg/transaction"
+	"gitlab.cept.gov.in/it-2.0-common/ledgers/pkg/account"
+	"gitlab.cept.gov.in/it-2.0-common/ledgers/pkg/client"
+	"gitlab.cept.gov.in/it-2.0-common/ledgers/pkg/transaction"
 	"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 )
 

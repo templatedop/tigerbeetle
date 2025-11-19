@@ -1,4 +1,4 @@
-module github.com/tigerbeetle/go-tigerbeetle-lib
+module gitlab.cept.gov.in/it-2.0-common/ledgers
 
 go 1.21
 

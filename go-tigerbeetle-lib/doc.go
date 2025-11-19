@@ -12,9 +12,9 @@ making it easier to build financial applications with complex transaction patter
 Create a client and start transacting:
 
 	import (
-		"github.com/tigerbeetle/go-tigerbeetle-lib/pkg/client"
-		"github.com/tigerbeetle/go-tigerbeetle-lib/pkg/account"
-		"github.com/tigerbeetle/go-tigerbeetle-lib/pkg/transfer"
+		"gitlab.cept.gov.in/it-2.0-common/ledgers/pkg/client"
+		"gitlab.cept.gov.in/it-2.0-common/ledgers/pkg/account"
+		"gitlab.cept.gov.in/it-2.0-common/ledgers/pkg/transfer"
 		"github.com/tigerbeetle/tigerbeetle-go/pkg/types"
 	)
 
