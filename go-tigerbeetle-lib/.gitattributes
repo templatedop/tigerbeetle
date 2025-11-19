@@ -1,0 +1,12 @@
+# Ensure shell scripts always use LF line endings (required for Docker on Windows)
+*.sh text eol=lf
+docker-entrypoint*.sh text eol=lf
+
+# Go files should use LF
+*.go text eol=lf
+
+# Ensure these files use LF as well
+*.yml text eol=lf
+*.yaml text eol=lf
+*.md text eol=lf
+Makefile text eol=lf

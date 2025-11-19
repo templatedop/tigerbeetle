@@ -11,10 +11,14 @@ services:
       - "3000:3000"
     volumes:
       - tigerbeetle-data-0:/data
-    command: >
-      start
-      --addresses=tigerbeetle-0:3000,tigerbeetle-1:3001,tigerbeetle-2:3002
-      /data/0_0.tigerbeetle
+      - ./docker-entrypoint-cluster.sh:/docker-entrypoint.sh:ro
+    environment:
+      - CLUSTER_ID=0
+      - REPLICA_ID=0
+      - REPLICA_COUNT=3
+      - ADDRESSES=tigerbeetle-0:3000,tigerbeetle-1:3001,tigerbeetle-2:3002
+      - LISTEN_ADDRESS=0.0.0.0:3000
+    entrypoint: ["/bin/sh", "/docker-entrypoint.sh"]
     networks:
       - tigerbeetle-net
     healthcheck:
@@ -32,10 +36,14 @@ services:
       - "3001:3001"
     volumes:
       - tigerbeetle-data-1:/data
-    command: >
-      start
-      --addresses=tigerbeetle-0:3000,tigerbeetle-1:3001,tigerbeetle-2:3002
-      /data/0_1.tigerbeetle
+      - ./docker-entrypoint-cluster.sh:/docker-entrypoint.sh:ro
+    environment:
+      - CLUSTER_ID=0
+      - REPLICA_ID=1
+      - REPLICA_COUNT=3
+      - ADDRESSES=tigerbeetle-0:3000,tigerbeetle-1:3001,tigerbeetle-2:3002
+      - LISTEN_ADDRESS=0.0.0.0:3001
+    entrypoint: ["/bin/sh", "/docker-entrypoint.sh"]
     networks:
       - tigerbeetle-net
     healthcheck:
@@ -53,10 +61,14 @@ services:
       - "3002:3002"
     volumes:
       - tigerbeetle-data-2:/data
-    command: >
-      start
-      --addresses=tigerbeetle-0:3000,tigerbeetle-1:3001,tigerbeetle-2:3002
-      /data/0_2.tigerbeetle
+      - ./docker-entrypoint-cluster.sh:/docker-entrypoint.sh:ro
+    environment:
+      - CLUSTER_ID=0
+      - REPLICA_ID=2
+      - REPLICA_COUNT=3
+      - ADDRESSES=tigerbeetle-0:3000,tigerbeetle-1:3001,tigerbeetle-2:3002
+      - LISTEN_ADDRESS=0.0.0.0:3002
+    entrypoint: ["/bin/sh", "/docker-entrypoint.sh"]
     networks:
       - tigerbeetle-net
     healthcheck:

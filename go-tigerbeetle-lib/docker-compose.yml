@@ -9,10 +9,12 @@ services:
       - "3000:3000"
     volumes:
       - tigerbeetle-data:/data
-    command: >
-      start
-      --addresses=0.0.0.0:3000
-      /data/0_0.tigerbeetle
+      - ./docker-entrypoint.sh:/docker-entrypoint.sh:ro
+    environment:
+      - CLUSTER_ID=0
+      - REPLICA_ID=0
+      - ADDRESSES=0.0.0.0:3000
+    entrypoint: ["/bin/sh", "/docker-entrypoint.sh"]
     healthcheck:
       test: ["CMD", "sh", "-c", "nc -z localhost 3000 || exit 1"]
       interval: 10s

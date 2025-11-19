@@ -7,6 +7,10 @@ This guide explains how to run TigerBeetle using Docker Compose.
 - Docker Engine 20.10+
 - Docker Compose 1.29+
 
+**For Windows Users:**
+- Docker Desktop for Windows with WSL2 backend (recommended)
+- Git configured with `core.autocrlf=false` to preserve LF line endings in shell scripts
+
 ## Quick Start (Single Node)
 
 For development and testing, use the single-node configuration:
@@ -172,6 +176,65 @@ docker-compose up -d
 # Cluster
 docker-compose -f docker-compose.cluster.yml down -v
 docker-compose -f docker-compose.cluster.yml up -d
+```
+
+### Windows-Specific Issues
+
+#### "Path does not exist" Error
+
+If you see errors like `Path does not exist` or `Unable to dump stack trace`, this is usually caused by:
+
+**Problem**: Line ending issues with shell scripts on Windows.
+
+**Solution 1** - Use the `.gitattributes` file (automatic):
+The repository includes a `.gitattributes` file that ensures shell scripts use Unix (LF) line endings. After cloning, re-checkout the files:
+
+```powershell
+# In PowerShell or Git Bash
+git rm --cached -r .
+git reset --hard HEAD
+```
+
+**Solution 2** - Manual conversion:
+Convert line endings manually using one of these methods:
+
+```powershell
+# Using PowerShell
+(Get-Content docker-entrypoint.sh -Raw) -replace "`r`n", "`n" | Set-Content -NoNewline docker-entrypoint.sh
+(Get-Content docker-entrypoint-cluster.sh -Raw) -replace "`r`n", "`n" | Set-Content -NoNewline docker-entrypoint-cluster.sh
+
+# Or using Git Bash
+dos2unix docker-entrypoint.sh docker-entrypoint-cluster.sh
+```
+
+**Solution 3** - Configure Git globally:
+Prevent future line ending issues:
+
+```bash
+git config --global core.autocrlf false
+```
+
+Then re-clone the repository.
+
+#### Docker Desktop Not Running
+
+Make sure Docker Desktop is running and the WSL2 backend is enabled:
+
+1. Open Docker Desktop settings
+2. Go to "General"
+3. Ensure "Use the WSL 2 based engine" is checked
+4. Restart Docker Desktop
+
+#### Volume Mount Issues on Windows
+
+If you see errors about volume mounts, ensure you're running from within the repository directory:
+
+```powershell
+# Navigate to the repository
+cd path\to\go-tigerbeetle-lib
+
+# Then start Docker Compose
+docker-compose up -d
 ```
 
 ## Running Examples
