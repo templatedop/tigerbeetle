@@ -1,0 +1,92 @@
+version: '3.8'
+
+# Multi-node TigerBeetle cluster for production-like setup
+# This configuration creates a 3-replica cluster for high availability
+
+services:
+  tigerbeetle-0:
+    image: ghcr.io/tigerbeetle/tigerbeetle:latest
+    container_name: tigerbeetle-0
+    ports:
+      - "3000:3000"
+    volumes:
+      - tigerbeetle-data-0:/data
+    command: >
+      start
+      --addresses=tigerbeetle-0:3000,tigerbeetle-1:3001,tigerbeetle-2:3002
+      /data/0_0.tigerbeetle
+    networks:
+      - tigerbeetle-net
+    healthcheck:
+      test: ["CMD", "sh", "-c", "nc -z localhost 3000 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+  tigerbeetle-1:
+    image: ghcr.io/tigerbeetle/tigerbeetle:latest
+    container_name: tigerbeetle-1
+    ports:
+      - "3001:3001"
+    volumes:
+      - tigerbeetle-data-1:/data
+    command: >
+      start
+      --addresses=tigerbeetle-0:3000,tigerbeetle-1:3001,tigerbeetle-2:3002
+      /data/0_1.tigerbeetle
+    networks:
+      - tigerbeetle-net
+    healthcheck:
+      test: ["CMD", "sh", "-c", "nc -z localhost 3001 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+  tigerbeetle-2:
+    image: ghcr.io/tigerbeetle/tigerbeetle:latest
+    container_name: tigerbeetle-2
+    ports:
+      - "3002:3002"
+    volumes:
+      - tigerbeetle-data-2:/data
+    command: >
+      start
+      --addresses=tigerbeetle-0:3000,tigerbeetle-1:3001,tigerbeetle-2:3002
+      /data/0_2.tigerbeetle
+    networks:
+      - tigerbeetle-net
+    healthcheck:
+      test: ["CMD", "sh", "-c", "nc -z localhost 3002 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+networks:
+  tigerbeetle-net:
+    driver: bridge
+
+volumes:
+  tigerbeetle-data-0:
+    driver: local
+  tigerbeetle-data-1:
+    driver: local
+  tigerbeetle-data-2:
+    driver: local
+
+# To run the cluster:
+#   docker-compose -f docker-compose.cluster.yml up -d
+#
+# To connect from Go applications, use any of the replica addresses:
+#   ReplicaAddrs: []string{"localhost:3000", "localhost:3001", "localhost:3002"}
+#
+# To stop the cluster:
+#   docker-compose -f docker-compose.cluster.yml down
+#
+# To remove all data:
+#   docker-compose -f docker-compose.cluster.yml down -v

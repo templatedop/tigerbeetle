@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  # Single TigerBeetle node for development/testing
+  tigerbeetle:
+    image: ghcr.io/tigerbeetle/tigerbeetle:latest
+    container_name: tigerbeetle
+    ports:
+      - "3000:3000"
+    volumes:
+      - tigerbeetle-data:/data
+    command: >
+      start
+      --addresses=0.0.0.0:3000
+      /data/0_0.tigerbeetle
+    healthcheck:
+      test: ["CMD", "sh", "-c", "nc -z localhost 3000 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  tigerbeetle-data:
+    driver: local
+
+# To run: docker-compose up -d
+# To stop: docker-compose down
+# To remove data: docker-compose down -v
