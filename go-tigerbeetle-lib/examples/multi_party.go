@@ -45,7 +45,7 @@ func main() {
 	// Split payment: Payer sends to 3 recipients atomically
 	// For example: splitting revenue, paying multiple vendors, etc.
 	multiPartyParams := transaction.MultiPartyTransferParams{
-		BaseID:      types.ToUint128(2000),
+		BaseID:      2000,
 		FromAccount: types.ToUint128(200), // Payer
 		Recipients: []transaction.Recipient{
 			{AccountID: types.ToUint128(201), Amount: types.ToUint128(1000)}, // 1000 to recipient 1

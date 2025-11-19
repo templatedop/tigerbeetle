@@ -54,7 +54,7 @@ func main() {
 
 	// Policy 1: Premium via Cash
 	if err := insuranceOps.CollectPremium(insurance.PremiumCollectionParams{
-		TransferID:      types.ToUint128(1000),
+		TransferID:      1000,
 		PolicyAccountID: policy1ID,
 		Amount:          types.ToUint128(5000), // ₹5,000
 		PaymentMethod:   insurance.PaymentMethodCash,
@@ -68,7 +68,7 @@ func main() {
 
 	// Policy 2: Premium via Payment Gateway
 	if err := insuranceOps.CollectPremium(insurance.PremiumCollectionParams{
-		TransferID:      types.ToUint128(1002),
+		TransferID:      1002,
 		PolicyAccountID: policy2ID,
 		Amount:          types.ToUint128(10000), // ₹10,000
 		PaymentMethod:   insurance.PaymentMethodPaymentGateway,
@@ -82,7 +82,7 @@ func main() {
 
 	// Policy 3: Premium via Bank Transfer
 	if err := insuranceOps.CollectPremium(insurance.PremiumCollectionParams{
-		TransferID:      types.ToUint128(1004),
+		TransferID:      1004,
 		PolicyAccountID: policy3ID,
 		Amount:          types.ToUint128(7500), // ₹7,500
 		PaymentMethod:   insurance.PaymentMethodBankTransfer,
@@ -118,7 +118,7 @@ func main() {
 
 	// Revive the policy with outstanding premium, penalty, and interest
 	if err := insuranceOps.RevivePolicy(insurance.RevivalParams{
-		BaseTransferID:     types.ToUint128(2000),
+		BaseTransferID:     2000,
 		PolicyAccountID:    lapsedPolicyID,
 		OutstandingPremium: types.ToUint128(15000), // ₹15,000 outstanding
 		PenaltyAmount:      types.ToUint128(1500),  // ₹1,500 penalty
@@ -154,7 +154,7 @@ func main() {
 
 	// First, add some accumulated value to the policy
 	if err := insuranceOps.CollectPremium(insurance.PremiumCollectionParams{
-		TransferID:      types.ToUint128(2500),
+		TransferID:      2500,
 		PolicyAccountID: maturedPolicyID,
 		Amount:          types.ToUint128(100000), // ₹1,00,000 accumulated
 		PaymentMethod:   insurance.PaymentMethodBankTransfer,
@@ -167,7 +167,7 @@ func main() {
 
 	// Process maturity claim
 	if err := insuranceOps.ProcessClaim(insurance.ClaimPaymentParams{
-		BaseTransferID:  types.ToUint128(3000),
+		BaseTransferID:  3000,
 		PolicyAccountID: maturedPolicyID,
 		ClaimAmount:     types.ToUint128(100000), // ₹1,00,000 claim
 		ClaimType:       insurance.TransferCodeMaturityClaim,
@@ -208,7 +208,7 @@ func main() {
 	}
 
 	errors, err := insuranceOps.CollectMonthlyPremiums(insurance.MonthlyPremiumCollectionParams{
-		BaseTransferID: types.ToUint128(4000),
+		BaseTransferID: 4000,
 		Premiums:       premiums,
 		Month:          time.February,
 		Year:           2024,
@@ -338,10 +338,9 @@ func showPolicyBalance(c *client.Client, policyID types.Uint128, name string) {
 		return
 	}
 
-	fmt.Printf("  %s: Credits=₹%d, Debits=₹%d, Net=₹%d\n",
+	fmt.Printf("  %s: Credits=₹%v, Debits=₹%v\n",
 		name,
 		balance.Account.CreditsPosted,
 		balance.Account.DebitsPosted,
-		balance.Account.CreditsPosted-balance.Account.DebitsPosted,
 	)
 }

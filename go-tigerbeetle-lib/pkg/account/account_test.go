@@ -16,8 +16,8 @@ func TestAccountBuilder(t *testing.T) {
 		HistoryEnabled().
 		Build()
 
-	if account.ID[0] != 123 {
-		t.Errorf("Expected ID 123, got %d", account.ID[0])
+	if account.ID != id {
+		t.Errorf("Expected ID %v, got %v", id, account.ID)
 	}
 
 	if account.Ledger != 1 {
@@ -32,7 +32,8 @@ func TestAccountBuilder(t *testing.T) {
 		t.Errorf("Expected UserData64 456, got %d", account.UserData64)
 	}
 
-	if !account.Flags.History {
+	historyFlag := types.AccountFlags{History: true}.ToUint16()
+	if (account.Flags & historyFlag) == 0 {
 		t.Error("Expected History flag to be set")
 	}
 }
@@ -42,7 +43,8 @@ func TestAccountBuilderLinked(t *testing.T) {
 		LinkedAccount().
 		Build()
 
-	if !account.Flags.Linked {
+	linkedFlag := types.AccountFlags{Linked: true}.ToUint16()
+	if (account.Flags & linkedFlag) == 0 {
 		t.Error("Expected Linked flag to be set")
 	}
 }
@@ -52,7 +54,8 @@ func TestAccountBuilderDebitsMustNotExceedCredits(t *testing.T) {
 		DebitsMustNotExceedCredits().
 		Build()
 
-	if !account.Flags.DebitsMustNotExceedCredits {
+	debitFlag := types.AccountFlags{DebitsMustNotExceedCredits: true}.ToUint16()
+	if (account.Flags & debitFlag) == 0 {
 		t.Error("Expected DebitsMustNotExceedCredits flag to be set")
 	}
 }
@@ -62,7 +65,8 @@ func TestAccountBuilderCreditsMustNotExceedDebits(t *testing.T) {
 		CreditsMustNotExceedDebits().
 		Build()
 
-	if !account.Flags.CreditsMustNotExceedDebits {
+	creditFlag := types.AccountFlags{CreditsMustNotExceedDebits: true}.ToUint16()
+	if (account.Flags & creditFlag) == 0 {
 		t.Error("Expected CreditsMustNotExceedDebits flag to be set")
 	}
 }

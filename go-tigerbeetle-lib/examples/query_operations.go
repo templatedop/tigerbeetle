@@ -54,7 +54,7 @@ func main() {
 		log.Fatalf("Failed to query accounts: %v", err)
 	}
 	for _, acc := range accountsInLedger1 {
-		fmt.Printf("  Account ID: %d, Code: %d\n", acc.ID.ToUint128(), acc.Code)
+		fmt.Printf("  Account ID: %v, Code: %d\n", acc.ID, acc.Code)
 	}
 
 	// Query accounts by code
@@ -64,7 +64,7 @@ func main() {
 		log.Fatalf("Failed to query accounts by code: %v", err)
 	}
 	for _, acc := range accountsByCode {
-		fmt.Printf("  Account ID: %d, Ledger: %d\n", acc.ID.ToUint128(), acc.Ledger)
+		fmt.Printf("  Account ID: %v, Ledger: %d\n", acc.ID, acc.Ledger)
 	}
 
 	// Get account debits and credits
@@ -74,8 +74,8 @@ func main() {
 		log.Fatalf("Failed to get debits: %v", err)
 	}
 	for _, transfer := range debits {
-		fmt.Printf("  Transfer ID: %d, Amount: %d\n",
-			transfer.ID.ToUint128(), transfer.Amount.ToUint128())
+		fmt.Printf("  Transfer ID: %v, Amount: %v\n",
+			transfer.ID, transfer.Amount)
 	}
 
 	fmt.Println("\nCredits for account 301:")
@@ -84,8 +84,8 @@ func main() {
 		log.Fatalf("Failed to get credits: %v", err)
 	}
 	for _, transfer := range credits {
-		fmt.Printf("  Transfer ID: %d, Amount: %d\n",
-			transfer.ID.ToUint128(), transfer.Amount.ToUint128())
+		fmt.Printf("  Transfer ID: %v, Amount: %v\n",
+			transfer.ID, transfer.Amount)
 	}
 
 	// Get recent transfers for an account
@@ -95,11 +95,11 @@ func main() {
 		log.Fatalf("Failed to get recent transfers: %v", err)
 	}
 	for _, transfer := range recentTransfers {
-		fmt.Printf("  Transfer ID: %d, Amount: %d, From: %d, To: %d\n",
-			transfer.ID.ToUint128(),
-			transfer.Amount.ToUint128(),
-			transfer.DebitAccountID.ToUint128(),
-			transfer.CreditAccountID.ToUint128())
+		fmt.Printf("  Transfer ID: %v, Amount: %v, From: %v, To: %v\n",
+			transfer.ID,
+			transfer.Amount,
+			transfer.DebitAccountID,
+			transfer.CreditAccountID)
 	}
 
 	// Query transfers by ledger
@@ -109,7 +109,7 @@ func main() {
 		log.Fatalf("Failed to query transfers: %v", err)
 	}
 	for _, transfer := range transfersInLedger {
-		fmt.Printf("  Transfer ID: %d, Amount: %d\n",
-			transfer.ID.ToUint128(), transfer.Amount.ToUint128())
+		fmt.Printf("  Transfer ID: %v, Amount: %v\n",
+			transfer.ID, transfer.Amount)
 	}
 }

@@ -21,20 +21,20 @@ func TestTransferBuilder(t *testing.T) {
 		Code(10).
 		Build()
 
-	if transfer.ID[0] != 100 {
-		t.Errorf("Expected ID 100, got %d", transfer.ID[0])
+	if transfer.ID != id {
+		t.Errorf("Expected ID %v, got %v", id, transfer.ID)
 	}
 
-	if transfer.DebitAccountID[0] != 1 {
-		t.Errorf("Expected DebitAccountID 1, got %d", transfer.DebitAccountID[0])
+	if transfer.DebitAccountID != debitID {
+		t.Errorf("Expected DebitAccountID %v, got %v", debitID, transfer.DebitAccountID)
 	}
 
-	if transfer.CreditAccountID[0] != 2 {
-		t.Errorf("Expected CreditAccountID 2, got %d", transfer.CreditAccountID[0])
+	if transfer.CreditAccountID != creditID {
+		t.Errorf("Expected CreditAccountID %v, got %v", creditID, transfer.CreditAccountID)
 	}
 
-	if transfer.Amount[0] != 1000 {
-		t.Errorf("Expected Amount 1000, got %d", transfer.Amount[0])
+	if transfer.Amount != amount {
+		t.Errorf("Expected Amount %v, got %v", amount, transfer.Amount)
 	}
 
 	if transfer.Ledger != 1 {
@@ -93,8 +93,8 @@ func TestTransferBuilderPostPending(t *testing.T) {
 		t.Error("Expected PostPendingTransfer flag to be set")
 	}
 
-	if transfer.PendingID[0] != 999 {
-		t.Errorf("Expected PendingID 999, got %d", transfer.PendingID[0])
+	if transfer.PendingID != pendingID {
+		t.Errorf("Expected PendingID %v, got %v", pendingID, transfer.PendingID)
 	}
 }
 
@@ -110,8 +110,8 @@ func TestTransferBuilderVoidPending(t *testing.T) {
 		t.Error("Expected VoidPendingTransfer flag to be set")
 	}
 
-	if transfer.PendingID[0] != 888 {
-		t.Errorf("Expected PendingID 888, got %d", transfer.PendingID[0])
+	if transfer.PendingID != pendingID {
+		t.Errorf("Expected PendingID %v, got %v", pendingID, transfer.PendingID)
 	}
 }
 
@@ -128,11 +128,13 @@ func TestTransferError(t *testing.T) {
 }
 
 func TestAmountUint64(t *testing.T) {
+	expectedAmount := types.ToUint128(12345)
+
 	transfer := New(types.ToUint128(1)).
 		AmountUint64(12345).
 		Build()
 
-	if transfer.Amount[0] != 12345 {
-		t.Errorf("Expected Amount 12345, got %d", transfer.Amount[0])
+	if transfer.Amount != expectedAmount {
+		t.Errorf("Expected Amount %v, got %v", expectedAmount, transfer.Amount)
 	}
 }

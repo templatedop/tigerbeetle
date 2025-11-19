@@ -43,7 +43,7 @@ func main() {
 		Build()
 
 	// Create all accounts
-	if err := accountMgr.CreateBatch([]types.Account{buyer, seller, escrowAccount}); err != nil {
+	if _, err := accountMgr.CreateBatch([]types.Account{buyer, seller, escrowAccount}); err != nil {
 		log.Fatalf("Failed to create accounts: %v", err)
 	}
 
@@ -71,7 +71,8 @@ func main() {
 
 	// Simulate successful transaction - release funds to seller
 	if err := txPatterns.ReleaseEscrow(
-		types.ToUint128(1001), // Release transfer ID
+		types.ToUint128(1001), // Post transfer ID
+		types.ToUint128(1002), // Release transfer ID
 		types.ToUint128(1000), // Escrow ID
 		types.ToUint128(102),  // Escrow account
 		types.ToUint128(101),  // Seller account

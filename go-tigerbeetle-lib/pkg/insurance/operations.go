@@ -33,7 +33,7 @@ func NewOperations(client InsuranceClient, ledger uint32) *Operations {
 
 // PremiumCollectionParams contains parameters for premium collection
 type PremiumCollectionParams struct {
-	TransferID      types.Uint128  // Unique transfer ID
+	TransferID      uint64         // Base transfer ID for generating IDs
 	PolicyAccountID types.Uint128  // Policy account receiving premium
 	Amount          types.Uint128  // Premium amount
 	PaymentMethod   PaymentMethod  // How payment was received
@@ -57,7 +57,7 @@ func (o *Operations) CollectPremium(params PremiumCollectionParams) error {
 	chain := batch.NewLinkedChain()
 
 	// Transfer 1: From payment collection account to premium income
-	transfer1 := transfer.New(params.TransferID).
+	transfer1 := transfer.New(types.ToUint128(params.TransferID)).
 		DebitAccount(types.ToUint128(uint64(paymentAccountCode))). // Payment account
 		CreditAccount(types.ToUint128(uint64(AccountCodePremiumIncome))). // Premium income
 		Amount(params.Amount).
@@ -67,7 +67,7 @@ func (o *Operations) CollectPremium(params PremiumCollectionParams) error {
 		Build()
 
 	// Transfer 2: From premium income to policy account
-	transfer2 := transfer.New(types.ToUint128(params.TransferID.ToUint128() + 1)).
+	transfer2 := transfer.New(types.ToUint128(params.TransferID + 1)).
 		DebitAccount(types.ToUint128(uint64(AccountCodePremiumIncome))). // Premium income
 		CreditAccount(params.PolicyAccountID). // Policy account
 		Amount(params.Amount).
@@ -92,7 +92,7 @@ func (o *Operations) CollectPremium(params PremiumCollectionParams) error {
 
 // RevivalParams contains parameters for policy revival
 type RevivalParams struct {
-	BaseTransferID     types.Uint128  // Base ID for generating transfer IDs
+	BaseTransferID     uint64         // Base ID for generating transfer IDs
 	PolicyAccountID    types.Uint128  // Policy account to revive
 	OutstandingPremium types.Uint128  // Outstanding premium amount
 	PenaltyAmount      types.Uint128  // Penalty for late payment
@@ -106,13 +106,13 @@ type RevivalParams struct {
 // This creates an atomic linked transfer for all revival amounts
 func (o *Operations) RevivePolicy(params RevivalParams) error {
 	paymentAccountCode := GetPaymentAccountCode(params.PaymentMethod)
-	baseID := params.BaseTransferID.ToUint128()
+	baseID := params.BaseTransferID
 
 	chain := batch.NewLinkedChain()
 	transferIndex := uint64(0)
 
 	// Transfer outstanding premium
-	if params.OutstandingPremium.ToUint128() > 0 {
+	if params.OutstandingPremium != types.ToUint128(0) {
 		chain.AddTransfer(
 			transfer.New(types.ToUint128(baseID + transferIndex)).
 				DebitAccount(types.ToUint128(uint64(paymentAccountCode))).
@@ -139,7 +139,7 @@ func (o *Operations) RevivePolicy(params RevivalParams) error {
 	}
 
 	// Transfer penalty amount
-	if params.PenaltyAmount.ToUint128() > 0 {
+	if params.PenaltyAmount != types.ToUint128(0) {
 		chain.AddTransfer(
 			transfer.New(types.ToUint128(baseID + transferIndex)).
 				DebitAccount(types.ToUint128(uint64(paymentAccountCode))).
@@ -153,7 +153,7 @@ func (o *Operations) RevivePolicy(params RevivalParams) error {
 	}
 
 	// Transfer interest amount
-	if params.InterestAmount.ToUint128() > 0 {
+	if params.InterestAmount != types.ToUint128(0) {
 		chain.AddTransfer(
 			transfer.New(types.ToUint128(baseID + transferIndex)).
 				DebitAccount(types.ToUint128(uint64(paymentAccountCode))).
@@ -180,7 +180,7 @@ func (o *Operations) RevivePolicy(params RevivalParams) error {
 
 // ClaimPaymentParams contains parameters for claim payment
 type ClaimPaymentParams struct {
-	BaseTransferID  types.Uint128  // Base ID for generating transfer IDs
+	BaseTransferID  uint64         // Base ID for generating transfer IDs
 	PolicyAccountID types.Uint128  // Policy account
 	ClaimAmount     types.Uint128  // Claim amount to pay
 	ClaimType       uint16         // Type of claim (death, maturity, etc.)
@@ -192,7 +192,7 @@ type ClaimPaymentParams struct {
 // Flow: Policy Account -> Claims Reserve -> Claims Payable -> Payment Account
 func (o *Operations) ProcessClaim(params ClaimPaymentParams) error {
 	paymentAccountCode := GetPaymentAccountCode(params.PaymentMethod)
-	baseID := params.BaseTransferID.ToUint128()
+	baseID := params.BaseTransferID
 
 	chain := batch.NewLinkedChain()
 
@@ -244,7 +244,7 @@ func (o *Operations) ProcessClaim(params ClaimPaymentParams) error {
 
 // MonthlyPremiumCollectionParams contains parameters for collecting monthly premiums
 type MonthlyPremiumCollectionParams struct {
-	BaseTransferID types.Uint128                    // Base ID for generating transfer IDs
+	BaseTransferID uint64                           // Base ID for generating transfer IDs
 	Premiums       []PolicyPremium                  // List of premiums to collect
 	Month          time.Month                       // Month of collection
 	Year           int                              // Year of collection
@@ -262,7 +262,7 @@ type PolicyPremium struct {
 // CollectMonthlyPremiums collects premiums for multiple policies in a batch
 func (o *Operations) CollectMonthlyPremiums(params MonthlyPremiumCollectionParams) ([]types.TransferEventResult, error) {
 	var allTransfers []types.Transfer
-	baseID := params.BaseTransferID.ToUint128()
+	baseID := params.BaseTransferID
 	transferIndex := uint64(0)
 
 	for _, premium := range params.Premiums {

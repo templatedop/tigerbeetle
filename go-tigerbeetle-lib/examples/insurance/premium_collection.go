@@ -102,7 +102,7 @@ func main() {
 	fmt.Println("Example 1: Collecting premium via CASH")
 	fmt.Println("----------------------------------------")
 	if err := insuranceOps.CollectPremium(insurance.PremiumCollectionParams{
-		TransferID:      types.ToUint128(1000),
+		TransferID:      1000,
 		PolicyAccountID: policyIDs[0],
 		Amount:          types.ToUint128(5000), // ₹5,000
 		PaymentMethod:   insurance.PaymentMethodCash,
@@ -120,7 +120,7 @@ func main() {
 	fmt.Println("Example 2: Collecting premium via PAYMENT GATEWAY")
 	fmt.Println("--------------------------------------------------")
 	if err := insuranceOps.CollectPremium(insurance.PremiumCollectionParams{
-		TransferID:      types.ToUint128(1002),
+		TransferID:      1002,
 		PolicyAccountID: policyIDs[1],
 		Amount:          types.ToUint128(10000), // ₹10,000
 		PaymentMethod:   insurance.PaymentMethodPaymentGateway,
@@ -138,7 +138,7 @@ func main() {
 	fmt.Println("Example 3: Collecting premium via BANK TRANSFER")
 	fmt.Println("------------------------------------------------")
 	if err := insuranceOps.CollectPremium(insurance.PremiumCollectionParams{
-		TransferID:      types.ToUint128(1004),
+		TransferID:      1004,
 		PolicyAccountID: policyIDs[2],
 		Amount:          types.ToUint128(7500), // ₹7,500
 		PaymentMethod:   insurance.PaymentMethodBankTransfer,
@@ -156,7 +156,7 @@ func main() {
 	fmt.Println("Example 4: Collecting premium via AUTO-DEBIT")
 	fmt.Println("---------------------------------------------")
 	if err := insuranceOps.CollectPremium(insurance.PremiumCollectionParams{
-		TransferID:      types.ToUint128(1006),
+		TransferID:      1006,
 		PolicyAccountID: policyIDs[3],
 		Amount:          types.ToUint128(12000), // ₹12,000
 		PaymentMethod:   insurance.PaymentMethodAutoDebit,
@@ -174,7 +174,7 @@ func main() {
 	fmt.Println("Example 5: Collecting premium via CHEQUE")
 	fmt.Println("-----------------------------------------")
 	if err := insuranceOps.CollectPremium(insurance.PremiumCollectionParams{
-		TransferID:      types.ToUint128(1008),
+		TransferID:      1008,
 		PolicyAccountID: policyIDs[4],
 		Amount:          types.ToUint128(8500), // ₹8,500
 		PaymentMethod:   insurance.PaymentMethodCheque,
@@ -231,7 +231,7 @@ func main() {
 	}
 
 	errors, err := insuranceOps.CollectMonthlyPremiums(insurance.MonthlyPremiumCollectionParams{
-		BaseTransferID: types.ToUint128(2000),
+		BaseTransferID: 2000,
 		Premiums:       premiums,
 		Month:          time.February,
 		Year:           2024,

@@ -103,7 +103,7 @@ func main() {
 
 	// Process revival
 	if err := insuranceOps.RevivePolicy(insurance.RevivalParams{
-		BaseTransferID:     types.ToUint128(1000),
+		BaseTransferID:     1000,
 		PolicyAccountID:    policy1ID,
 		OutstandingPremium: types.ToUint128(outstandingPremium),
 		PenaltyAmount:      types.ToUint128(penalty),
@@ -162,7 +162,7 @@ func main() {
 
 	// Process revival via cash payment
 	if err := insuranceOps.RevivePolicy(insurance.RevivalParams{
-		BaseTransferID:     types.ToUint128(2000),
+		BaseTransferID:     2000,
 		PolicyAccountID:    policy2ID,
 		OutstandingPremium: types.ToUint128(outstandingPremium2),
 		PenaltyAmount:      types.ToUint128(penalty2),
@@ -219,7 +219,7 @@ func main() {
 
 	// Process revival with zero penalty
 	if err := insuranceOps.RevivePolicy(insurance.RevivalParams{
-		BaseTransferID:     types.ToUint128(3000),
+		BaseTransferID:     3000,
 		PolicyAccountID:    policy3ID,
 		OutstandingPremium: types.ToUint128(outstandingPremium3),
 		PenaltyAmount:      types.ToUint128(0), // No penalty

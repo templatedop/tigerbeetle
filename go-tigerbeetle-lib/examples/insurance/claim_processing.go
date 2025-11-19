@@ -103,7 +103,7 @@ func main() {
 	// Process death claim
 	deathClaimAmount := uint64(500000)
 	if err := insuranceOps.ProcessClaim(insurance.ClaimPaymentParams{
-		BaseTransferID:  types.ToUint128(10000),
+		BaseTransferID:  10000,
 		PolicyAccountID: deathClaimPolicyID,
 		ClaimAmount:     types.ToUint128(deathClaimAmount),
 		ClaimType:       insurance.TransferCodeDeathClaim,
@@ -148,7 +148,7 @@ func main() {
 	// Process maturity claim
 	maturityAmount := uint64(1000000)
 	if err := insuranceOps.ProcessClaim(insurance.ClaimPaymentParams{
-		BaseTransferID:  types.ToUint128(11000),
+		BaseTransferID:  11000,
 		PolicyAccountID: maturityPolicyID,
 		ClaimAmount:     types.ToUint128(maturityAmount),
 		ClaimType:       insurance.TransferCodeMaturityClaim,
@@ -193,7 +193,7 @@ func main() {
 	// Process partial withdrawal
 	withdrawalAmount := uint64(100000)
 	if err := insuranceOps.ProcessClaim(insurance.ClaimPaymentParams{
-		BaseTransferID:  types.ToUint128(12000),
+		BaseTransferID:  12000,
 		PolicyAccountID: ulipPolicyID,
 		ClaimAmount:     types.ToUint128(withdrawalAmount),
 		ClaimType:       insurance.TransferCodePartialWithdrawal,
@@ -240,7 +240,7 @@ func main() {
 	// Process surrender
 	surrenderAmount := uint64(240000) // 80% of premiums paid
 	if err := insuranceOps.ProcessClaim(insurance.ClaimPaymentParams{
-		BaseTransferID:  types.ToUint128(13000),
+		BaseTransferID:  13000,
 		PolicyAccountID: surrenderPolicyID,
 		ClaimAmount:     types.ToUint128(surrenderAmount),
 		ClaimType:       insurance.TransferCodeSurrenderValue,
@@ -287,8 +287,10 @@ func fundPolicy(c *client.Client, policyID types.Uint128, amount uint64) {
 	insuranceOps := insurance.NewOperations(c, insurance.LedgerINR)
 
 	// Simulate premium collection to fund the policy
+	// Use a fixed high base ID to avoid conflicts
+	transferID := uint64(5000000 + amount) // Simple unique ID generation
 	if err := insuranceOps.CollectPremium(insurance.PremiumCollectionParams{
-		TransferID:      types.ToUint128(policyID.ToUint128() + 1000000),
+		TransferID:      transferID,
 		PolicyAccountID: policyID,
 		Amount:          types.ToUint128(amount),
 		PaymentMethod:   insurance.PaymentMethodBankTransfer,
