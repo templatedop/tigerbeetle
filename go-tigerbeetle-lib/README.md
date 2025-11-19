@@ -23,6 +23,43 @@ A comprehensive, high-level Go library for interacting with TigerBeetle, the dis
 go get gitlab.cept.gov.in/it-2.0-common/ledgers
 ```
 
+## Running TigerBeetle
+
+### Using Docker (Recommended)
+
+The easiest way to run TigerBeetle is using Docker Compose:
+
+```bash
+# Start single node (development)
+make docker-start
+
+# Start 3-node cluster (production)
+make cluster-start
+
+# View logs
+make docker-logs
+
+# Stop and clean up
+make docker-clean
+```
+
+See [DOCKER.md](DOCKER.md) for complete Docker setup documentation.
+
+### Manual Installation
+
+Alternatively, install TigerBeetle directly:
+
+```bash
+# Download and install TigerBeetle
+curl -LO https://github.com/tigerbeetle/tigerbeetle/releases/latest/download/tigerbeetle-$(uname -s)-$(uname -m).zip
+unzip tigerbeetle-*.zip
+sudo mv tigerbeetle /usr/local/bin/
+
+# Create data directory and start
+tigerbeetle format --cluster=0 --replica=0 0_0.tigerbeetle
+tigerbeetle start --addresses=3000 0_0.tigerbeetle
+```
+
 ## Quick Start
 
 ### Creating a Client
